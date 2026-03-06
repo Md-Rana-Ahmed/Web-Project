@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediAI Portal | Register</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #0ea5e9;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --danger: #ef4444;
+            --success: #10b981;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        
+        .register-container {
+            width: 100%;
+            max-width: 500px;
+        }
+        
+        .register-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .logo i {
+            font-size: 2.5rem;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--dark);
+            margin-top: 0.5rem;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #f1f5f9;
+            color: var(--dark);
+        }
+        
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+        
+        .link-text {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: var(--dark);
+        }
+        
+        .link-text a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .alert {
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+        
+        .alert-danger {
+            background-color: #fee2e2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+        }
+        
+        .alert-success {
+            background-color: #d1fae5;
+            border: 1px solid #a7f3d0;
+            color: #059669;
+        }
+        
+        .password-strength {
+            margin-top: 0.5rem;
+            height: 6px;
+            border-radius: 3px;
+            background: #e2e8f0;
+            overflow: hidden;
+        }
+        
+        .strength-bar {
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .strength-weak { background: #ef4444; }
+        .strength-medium { background: #f59e0b; }
+        .strength-strong { background: #10b981; }
+        
+        @media (max-width: 576px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="register-card">
+            <div class="logo">
+                <i class="fas fa-stethoscope"></i>
+                <h1>Create Account</h1>
+                <p style="color: #64748b; margin-top: 0.5rem;">Join our AI-powered health platform</p>
+            </div>
+            
+            <div id="alert" class="alert" style="display: none;"></div>
+            
+            <form id="registerForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label style="display: block; margin-bottom: 0.5rem; color: var(--dark); font-weight: 500;">
+                            First Name
+                        </label>
+                        <input type="text" id="firstName" class="form-control" placeholder="John" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label style="display: block; margin-bottom: 0.5rem; color: var(--dark); font-weight: 500;">
+                            Last Name
+                        </label>
+                        <input type="text" id="lastName" class="form-control" placeholder="Doe" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 0.5rem; color: var(--dark); font-weight: 500;">
+                        Email Address
+                    </label>
+                    <input type="email" id="email" class="form-control" placeholder="john@example.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 0.5rem; color: var(--dark); font-weight: 500;">
+                        Password
+                    </label>
+                    <input type="password" id="password" class="form-control" placeholder="••••••••" required 
+                           oninput="checkPasswordStrength(this.value)">
+                    <div class="password-strength">
+                        <div id="strengthBar" class="strength-bar"></div>
+                    </div>
+                    <small style="color: #64748b; display: block; margin-top: 0.5rem;">
+                        Use at least 8 characters with letters and numbers
+                    </small>
+                </div>
+                
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 0.5rem; color: var(--dark); font-weight: 500;">
+                        Confirm Password
+                    </label>
+                    <input type="password" id="confirmPassword" class="form-control" placeholder="••••••••" required>
+                </div>
+                
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 0.5rem; color: var(--dark); font-weight: 500;">
+                        Date of Birth
+                    </label>
+                    <input type="date" id="dob" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 0.5rem; color: var(--dark); font-weight: 500;">
+                        Gender
+                    </label>
+                    <select id="gender" class="form-control" required>
+                        <option value="">Select gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                        <option value="prefer-not-to-say">Prefer not to say</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                        <input type="checkbox" id="terms" required>
+                        <span style="color: var(--dark);">
+                            I agree to the <a href="#" style="color: var(--primary);">Terms of Service</a> 
+                            and <a href="#" style="color: var(--primary);">Privacy Policy</a>
+                        </span>
+                    </label>
+                </div>
+                
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                        <input type="checkbox" id="medicalConsent">
+                        <span style="color: var(--dark);">
+                            I consent to AI-assisted health analysis (optional)
+                        </span>
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-user-plus"></i> Create Account
+                </button>
+                
+                <button type="button" class="btn btn-secondary" style="margin-top: 1rem;" onclick="window.location.href='login.html'">
+                    <i class="fas fa-arrow-left"></i> Back to Login
+                </button>
+            </form>
+            
+            <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #e2e8f0;">
+                <p style="color: #64748b; font-size: 0.9rem; text-align: center;">
+                    <strong>⚠️ Medical Disclaimer:</strong> This portal provides AI-assisted information for 
+                    educational purposes only. It is not a substitute for professional medical advice.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const alertBox = document.getElementById('alert');
+        const strengthBar = document.getElementById('strengthBar');
+        
+        function checkPasswordStrength(password) {
+            let strength = 0;
+            
+            if (password.length >= 8) strength++;
+            if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
+            if (/\d/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+            
+            let width = 0;
+            let className = '';
+            
+            if (strength === 0) {
+                width = 0;
+                className = '';
+            } else if (strength <= 2) {
+                width = 33;
+                className = 'strength-weak';
+            } else if (strength === 3) {
+                width = 66;
+                className = 'strength-medium';
+            } else {
+                width = 100;
+                className = 'strength-strong';
+            }
+            
+            strengthBar.style.width = width + '%';
+            strengthBar.className = 'strength-bar ' + className;
+        }
+        
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Get form values
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const dob = document.getElementById('dob').value;
+            const gender = document.getElementById('gender').value;
+            
+            // Clear previous alerts
+            alertBox.style.display = 'none';
+            alertBox.className = 'alert';
+            
+            // Validation
+            if (!firstName || !lastName || !email || !password || !dob || !gender) {
+                showAlert('Please fill in all required fields', 'danger');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showAlert('Passwords do not match', 'danger');
+                return;
+            }
+            
+            if (password.length < 8) {
+                showAlert('Password must be at least 8 characters long', 'danger');
+                return;
+            }
+            
+            if (!document.getElementById('terms').checked) {
+                showAlert('You must agree to the Terms of Service', 'danger');
+                return;
+            }
+            
+            // Email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showAlert('Please enter a valid email address', 'danger');
+                return;
+            }
+            
+            try {
+                // Show loading
+                const submitBtn = this.querySelector('button[type="submit"]');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Account...';
+                submitBtn.disabled = true;
+                
+                // Simulate API call
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                // Create user object
+                const user = {
+                    id: Date.now(),
+                    name: `${firstName} ${lastName}`,
+                    email: email,
+                    dob: dob,
+                    gender: gender,
+                    token: 'demo_jwt_token_' + Date.now()
+                };
+                
+                // Save to localStorage (in real app, this would be server-side)
+                localStorage.setItem('currentUser', JSON.stringify(user));
+                localStorage.setItem('authToken', user.token);
+                
+                showAlert('Account created successfully! Redirecting to login...', 'success');
+                
+                // Redirect after delay
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 1500);
+                
+            } catch (error) {
+                showAlert('Registration failed. Please try again.', 'danger');
+                // Reset button
+                const submitBtn = this.querySelector('button[type="submit"]');
+                submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account';
+                submitBtn.disabled = false;
+            }
+        });
+        
+        function showAlert(message, type) {
+            alertBox.textContent = message;
+            alertBox.className = `alert alert-${type}`;
+            alertBox.style.display = 'block';
+        }
+        
+        // Set max date for date of birth (minimum 18 years old)
+        window.addEventListener('DOMContentLoaded', () => {
+            const today = new Date();
+            const minDate = new Date(today.getFullYear() - 100, today.getMonth(), today.getDate());
+            const maxDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+            
+            const dobInput = document.getElementById('dob');
+            dobInput.min = minDate.toISOString().split('T')[0];
+            dobInput.max = maxDate.toISOString().split('T')[0];
+            dobInput.value = maxDate.toISOString().split('T')[0];
+        });
+    </script>
+</body>
+</html>

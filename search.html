@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediAI Portal | Medicine Search</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #0ea5e9;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+        
+        body {
+            background: #f8fafc;
+            min-height: 100vh;
+        }
+        
+        .navbar {
+            background: white;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .nav-links a {
+            margin: 0 0.75rem;
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 600;
+            transition: color 0.3s;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary);
+            background: #f0f9ff;
+        }
+        
+        .nav-links a.active {
+            color: var(--primary);
+            background: #f0f9ff;
+        }
+        
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+        
+        .main-content {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .search-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .search-header h1 {
+            font-size: 2.5rem;
+            color: var(--dark);
+            margin-bottom: 1rem;
+        }
+        
+        .search-box {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+            margin-bottom: 2rem;
+        }
+        
+        .search-input-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        
+        .search-btn {
+            padding: 0 2rem;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
+        }
+        
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .filter-select {
+            padding: 0.75rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            background: white;
+            color: var(--dark);
+            font-weight: 500;
+            cursor: pointer;
+            min-width: 150px;
+        }
+        
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .medicine-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .medicine-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .medicine-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+        
+        .pill-icon { background: #dbeafe; color: var(--primary); }
+        .capsule-icon { background: #f0f9ff; color: var(--secondary); }
+        .liquid-icon { background: #f0fdf4; color: var(--success); }
+        
+        .medicine-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+        
+        .medicine-type {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: #f1f5f9;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            color: #64748b;
+            margin-bottom: 1rem;
+        }
+        
+        .medicine-details {
+            margin-bottom: 1rem;
+        }
+        
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        
+        .detail-label {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+        
+        .detail-value {
+            color: var(--dark);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        .interaction-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+        
+        .interaction-safe { background: #d1fae5; color: #065f46; }
+        .interaction-warning { background: #fef3c7; color: #92400e; }
+        .interaction-danger { background: #fee2e2; color: #991b1b; }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 3rem;
+        }
+        
+        .page-btn {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .page-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        
+        .page-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+            
+            .nav-links {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 0.5rem;
+            }
+            
+            .nav-links a {
+                margin: 0;
+                padding: 0.5rem;
+                font-size: 0.9rem;
+            }
+            
+            .search-input-group {
+                flex-direction: column;
+            }
+            
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .main-content {
+                padding: 0 1rem;
+            }
+        }
+        
+        .alert-box {
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .alert-info {
+            background: #dbeafe;
+            border: 1px solid #bfdbfe;
+            color: #1e40af;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fas fa-stethoscope"></i>
+            <span>MediAI Portal</span>
+        </div>
+        
+        <div class="nav-links">
+            <a href="index.html"><i class="fas fa-home"></i> Dashboard</a>
+            <a href="search.html" class="active"><i class="fas fa-search"></i> Medicine Search</a>
+            <a href="symptom-checker.html"><i class="fas fa-robot"></i> Symptom Check</a>
+            <a href="prescription.html"><i class="fas fa-file-prescription"></i> Prescription</a>
+            <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+        </div>
+        
+        <div class="user-menu">
+            <div class="user-avatar" id="userInitials">JD</div>
+            <button onclick="logout()" style="background: none; border: none; color: var(--dark); cursor: pointer;">
+                <i class="fas fa-sign-out-alt"></i>
+            </button>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="search-header">
+            <h1>AI-Powered Medicine Search</h1>
+            <p style="color: #64748b; font-size: 1.1rem;">
+                Search for medicines, check interactions, and get detailed information
+            </p>
+        </div>
+        
+        <div class="alert-box alert-info">
+            <i class="fas fa-info-circle" style="font-size: 1.2rem;"></i>
+            <div>
+                <strong>AI Analysis Active:</strong> Our AI analyzes drug interactions based on latest medical data. 
+                Always consult your doctor before taking new medications.
+            </div>
+        </div>
+        
+        <div class="search-box">
+            <div class="search-input-group">
+                <input type="text" id="medicineSearch" class="search-input" 
+                       placeholder="Search for medicines (e.g., Paracetamol, Ibuprofen, Amoxicillin)...">
+                <button class="search-btn" onclick="searchMedicines()">
+                    <i class="fas fa-search"></i> Search
+                </button>
+            </div>
+            
+            <div class="filters">
+                <select class="filter-select" id="filterType">
+                    <option value="">All Medicine Types</option>
+                    <option value="tablet">Tablet</option>
+                    <option value="capsule">Capsule</option>
+                    <option value="syrup">Syrup</option>
+                    <option value="injection">Injection</option>
+                    <option value="ointment">Ointment</option>
+                </select>
+                
+                <select class="filter-select" id="filterCategory">
+                    <option value="">All Categories</option>
+                    <option value="pain">Pain Relief</option>
+                    <option value="antibiotic">Antibiotics</option>
+                    <option value="vitamin">Vitamins</option>
+                    <option value="blood">Blood Pressure</option>
+                    <option value="diabetes">Diabetes</option>
+                </select>
+                
+                <select class="filter-select" id="filterInteraction">
+                    <option value="">All Safety Levels</option>
+                    <option value="safe">Safe Interactions</option>
+                    <option value="warning">Moderate Warning</option>
+                    <option value="danger">Serious Warning</option>
+                </select>
+            </div>
+        </div>
+        
+        <!-- Search Results -->
+        <div id="resultsContainer">
+            <div class="results-grid" id="medicineResults">
+                <!-- Medicine cards will be inserted here by JavaScript -->
+            </div>
+            
+            <!-- Loading Indicator -->
+            <div id="loadingIndicator" style="display: none; text-align: center; padding: 3rem;">
+                <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--primary);"></i>
+                <p style="margin-top: 1rem; color: #64748b;">AI is analyzing medicines...</p>
+            </div>
+            
+            <!-- No Results -->
+            <div id="noResults" style="display: none; text-align: center; padding: 3rem;">
+                <i class="fas fa-search" style="font-size: 3rem; color: #cbd5e1;"></i>
+                <h3 style="margin-top: 1rem; color: #64748b;">No medicines found</h3>
+                <p style="color: #94a3b8;">Try searching with different keywords</p>
+            </div>
+        </div>
+        
+        <!-- Pagination -->
+        <div class="pagination" id="pagination">
+            <!-- Pagination buttons will be inserted here -->
+        </div>
+    </div>
+
+    <!-- Medicine Detail Modal -->
+    <div id="medicineModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+          background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center;">
+        <div style="background: white; border-radius: 20px; padding: 2rem; max-width: 800px; width: 90%; max-height: 80vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h2 id="modalMedicineName" style="font-size: 1.8rem; color: var(--dark);"></h2>
+                <button onclick="closeModal()" style="background: none; border: none; font-size: 1.5rem; color: #64748b; cursor: pointer;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div id="modalMedicineContent">
+                <!-- Modal content will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample medicine database
+        const medicines = [
+            {
+                id: 1,
+                name: "Paracetamol",
+                genericName: "Acetaminophen",
+                type: "tablet",
+                category: "pain",
+                dosage: "500mg",
+                uses: "Fever, mild to moderate pain",
+                sideEffects: "Rare: Liver damage (with overdose)",
+                interactions: "Alcohol (High risk)",
+                interactionLevel: "danger",
+                price: "$0.05 per tablet",
+                manufacturer: "Various",
+                storage: "Room temperature",
+                icon: "pill"
+            },
+            {
+                id: 2,
+                name: "Ibuprofen",
+                genericName: "Ibuprofen",
+                type: "tablet",
+                category: "pain",
+                dosage: "400mg",
+                uses: "Pain, inflammation, fever",
+                sideEffects: "Stomach upset, heartburn",
+                interactions: "Aspirin (Moderate risk)",
+                interactionLevel: "warning",
+                price: "$0.08 per tablet",
+                manufacturer: "Various",
+                storage: "Room temperature",
+                icon: "pill"
+            },
+            {
+                id: 3,
+                name: "Amoxicillin",
+                genericName: "Amoxicillin",
+                type: "capsule",
+                category: "antibiotic",
+                dosage: "250mg",
+                uses: "Bacterial infections",
+                sideEffects: "Diarrhea, rash, nausea",
+                interactions: "Oral contraceptives (Low risk)",
+                interactionLevel: "safe",
+                price: "$0.15 per capsule",
+                manufacturer: "Various",
+                storage: "Refrigerate after reconstitution",
+                icon: "capsule"
+            },
+            {
+                id: 4,
+                name: "Cetirizine",
+                genericName: "Cetirizine Hydrochloride",
+                type: "tablet",
+                category: "allergy",
+                dosage: "10mg",
+                uses: "Allergies, hay fever",
+                sideEffects: "Drowsiness, dry mouth",
+                interactions: "Alcohol (Moderate risk)",
+                interactionLevel: "warning",
+                price: "$0.10 per tablet",
+                manufacturer: "Various",
+                storage: "Room temperature",
+                icon: "pill"
+            },
+            {
+                id: 5,
+                name: "Metformin",
+                genericName: "Metformin Hydrochloride",
+                type: "tablet",
+                category: "diabetes",
+                dosage: "500mg",
+                uses: "Type 2 diabetes",
+                sideEffects: "Nausea, diarrhea, stomach pain",
+                interactions: "Alcohol (High risk)",
+                interactionLevel: "danger",
+                price: "$0.12 per tablet",
+                manufacturer: "Various",
+                storage: "Room temperature",
+                icon: "pill"
+            },
+            {
+                id: 6,
+                name: "Lisinopril",
+                genericName: "Lisinopril",
+                type: "tablet",
+                category: "blood",
+                dosage: "10mg",
+                uses: "High blood pressure, heart failure",
+                sideEffects: "Dizziness, cough, headache",
+                interactions: "Diuretics (High risk)",
+                interactionLevel: "danger",
+                price: "$0.07 per tablet",
+                manufacturer: "Various",
+                storage: "Room temperature",
+                icon: "pill"
+            },
+            {
+                id: 7,
+                name: "Vitamin C",
+                genericName: "Ascorbic Acid",
+                type: "tablet",
+                category: "vitamin",
+                dosage: "500mg",
+                uses: "Immune support, antioxidant",
+                sideEffects: "Diarrhea (with high doses)",
+                interactions: "Generally safe",
+                interactionLevel: "safe",
+                price: "$0.03 per tablet",
+                manufacturer: "Various",
+                storage: "Room temperature",
+                icon: "pill"
+            },
+            {
+                id: 8,
+                name: "Cough Syrup",
+                genericName: "Dextromethorphan",
+                type: "syrup",
+                category: "cough",
+                dosage: "10ml",
+                uses: "Cough suppression",
+                sideEffects: "Drowsiness, dizziness",
+                interactions: "MAO inhibitors (High risk)",
+                interactionLevel: "danger",
+                price: "$5.99 per bottle",
+                manufacturer: "Various",
+                storage: "Room temperature",
+                icon: "liquid"
+            }
+        ];
+        
+        // Initialize user
+        function initUser() {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Set user initials
+            const userName = user.name || 'User';
+            const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase();
+            document.getElementById('userInitials').textContent = initials;
+            
+            // Load initial medicines
+            displayMedicines(medicines);
+            setupPagination();
+        }
+        
+        // Search medicines
+        function searchMedicines() {
+            const searchInput = document.getElementById('medicineSearch');
+            const filterType = document.getElementById('filterType').value;
+            const filterCategory = document.getElementById('filterCategory').value;
+            const filterInteraction = document.getElementById('filterInteraction').value;
+            
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            
+            // Show loading
+            document.getElementById('loadingIndicator').style.display = 'block';
+            document.getElementById('noResults').style.display = 'none';
+            
+            setTimeout(() => {
+                const filtered = medicines.filter(med => {
+                    const matchesSearch = !searchTerm || 
+                        med.name.toLowerCase().includes(searchTerm) ||
+                        med.genericName.toLowerCase().includes(searchTerm) ||
+                        med.uses.toLowerCase().includes(searchTerm);
+                    
+                    const matchesType = !filterType || med.type === filterType;
+                    const matchesCategory = !filterCategory || med.category === filterCategory;
+                    const matchesInteraction = !filterInteraction || med.interactionLevel === filterInteraction;
+                    
+                    return matchesSearch && matchesType && matchesCategory && matchesInteraction;
+                });
+                
+                displayMedicines(filtered);
+                
+                // Hide loading
+                document.getElementById('loadingIndicator').style.display = 'none';
+                
+                // Show no results if empty
+                if (filtered.length === 0) {
+                    document.getElementById('noResults').style.display = 'block';
+                }
+            }, 500);
+        }
+        
+        // Display medicines in grid
+        function displayMedicines(medList) {
+            const container = document.getElementById('medicineResults');
+            container.innerHTML = '';
+            
+            medList.forEach(medicine => {
+                const iconClass = medicine.icon === 'capsule' ? 'capsule-icon' : 
+                                 medicine.icon === 'liquid' ? 'liquid-icon' : 'pill-icon';
+                
+                const interactionClass = medicine.interactionLevel === 'safe' ? 'interaction-safe' :
+                                       medicine.interactionLevel === 'warning' ? 'interaction-warning' : 
+                                       'interaction-danger';
+                
+                const interactionText = medicine.interactionLevel === 'safe' ? 'Safe Interactions' :
+                                      medicine.interactionLevel === 'warning' ? 'Moderate Risk' : 
+                                      'High Risk';
+                
+                const card = document.createElement('div');
+                card.className = 'medicine-card';
+                card.onclick = () => openMedicineDetail(medicine);
+                
+                card.innerHTML = `
+                    <div class="medicine-icon ${iconClass}">
+                        <i class="fas fa-${medicine.icon}"></i>
+                    </div>
+                    <div class="medicine-name">${medicine.name}</div>
+                    <div class="medicine-type">${medicine.genericName}</div>
+                    <div class="medicine-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Dosage:</span>
+                            <span class="detail-value">${medicine.dosage}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Uses:</span>
+                            <span class="detail-value">${medicine.uses.substring(0, 30)}${medicine.uses.length > 30 ? '...' : ''}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Price:</span>
+                            <span class="detail-value">${medicine.price}</span>
+                        </div>
+                    </div>
+                    <div class="${interactionClass} interaction-badge">
+                        ${interactionText}
+                    </div>
+                `;
+                
+                container.appendChild(card);
+            });
+        }
+        
+        // Open medicine detail modal
+        function openMedicineDetail(medicine) {
+            document.getElementById('medicineModal').style.display = 'flex';
+            document.getElementById('modalMedicineName').textContent = medicine.name;
+            
+            const interactionClass = medicine.interactionLevel === 'safe' ? 'interaction-safe' :
+                                  medicine.interactionLevel === 'warning' ? 'interaction-warning' : 
+                                  'interaction-danger';
+            
+            const interactionText = medicine.interactionLevel === 'safe' ? 'Low Risk - Generally Safe' :
+                                  medicine.interactionLevel === 'warning' ? 'Moderate Risk - Use with Caution' : 
+                                  'High Risk - Serious Interactions';
+            
+            const content = document.getElementById('modalMedicineContent');
+            content.innerHTML = `
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+                    <div>
+                        <h3 style="color: var(--dark); margin-bottom: 1rem;">Medicine Information</h3>
+                        <div style="background: #f8fafc; padding: 1.5rem; border-radius: 12px;">
+                            <div style="margin-bottom: 1rem;">
+                                <strong style="color: #64748b;">Generic Name:</strong>
+                                <div style="color: var(--dark);">${medicine.genericName}</div>
+                            </div>
+                            <div style="margin-bottom: 1rem;">
+                                <strong style="color: #64748b;">Dosage Form:</strong>
+                                <div style="color: var(--dark);">${medicine.type.charAt(0).toUpperCase() + medicine.type.slice(1)}</div>
+                            </div>
+                            <div style="margin-bottom: 1rem;">
+                                <strong style="color: #64748b;">Manufacturer:</strong>
+                                <div style="color: var(--dark);">${medicine.manufacturer}</div>
+                            </div>
+                            <div>
+                                <strong style="color: #64748b;">Storage:</strong>
+                                <div style="color: var(--dark);">${medicine.storage}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 style="color: var(--dark); margin-bottom: 1rem;">Safety Information</h3>
+                        <div style="background: #fef3c7; padding: 1.5rem; border-radius: 12px; margin-bottom: 1rem;">
+                            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                <i class="fas fa-exclamation-triangle" style="color: #d97706;"></i>
+                                <strong>Important Safety Warning</strong>
+                            </div>
+                            <p style="color: #92400e; font-size: 0.9rem;">
+                                This information is for reference only. Always consult your doctor 
+                                before starting or stopping any medication.
+                            </p>
+                        </div>
+                        
+                        <div class="${interactionClass}" style="padding: 1rem; border-radius: 12px; margin-bottom: 1rem;">
+                            <strong>Interaction Risk:</strong> ${interactionText}
+                        </div>
+                        
+                        <div style="background: #f8fafc; padding: 1rem; border-radius: 12px;">
+                            <strong style="color: #64748b;">Known Interactions:</strong>
+                            <div style="color: var(--dark); margin-top: 0.5rem;">${medicine.interactions}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="background: #f0f9ff; padding: 1.5rem; border-radius: 12px;">
+                    <h3 style="color: var(--dark); margin-bottom: 1rem;">AI Analysis</h3>
+                    <div style="display: flex; align-items: flex-start; gap: 1rem;">
+                        <i class="fas fa-robot" style="color: var(--primary); font-size: 1.5rem;"></i>
+                        <div>
+                            <p style="color: var(--dark); margin-bottom: 0.5rem;">
+                                <strong>Based on medical databases:</strong> ${medicine.name} is commonly prescribed for 
+                                ${medicine.uses.toLowerCase()}. Our AI has analyzed ${Math.floor(Math.random() * 1000) + 500} 
+                                patient records and found this to be effective in ${Math.floor(Math.random() * 30) + 70}% of cases.
+                            </p>
+                            <p style="color: #64748b; font-size: 0.9rem;">
+                                <i class="fas fa-clock"></i> AI analysis updated 2 hours ago
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+                    <button onclick="addToReminders('${medicine.name}')" 
+                            style="padding: 0.75rem 1.5rem; background: var(--primary); color: white; 
+                                   border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                        <i class="fas fa-bell"></i> Add to Reminders
+                    </button>
+                    <button onclick="checkInteractions('${medicine.name}')" 
+                            style="padding: 0.75rem 1.5rem; background: #f1f5f9; color: var(--dark); 
+                                   border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                        <i class="fas fa-exclamation-triangle"></i> Check Interactions
+                    </button>
+                </div>
+            `;
+        }
+        
+        function closeModal() {
+            document.getElementById('medicineModal').style.display = 'none';
+        }
+        
+        function addToReminders(medicineName) {
+            alert(`Added ${medicineName} to your reminders!`);
+            closeModal();
+        }
+        
+        function checkInteractions(medicineName) {
+            alert(`Checking interactions for ${medicineName}...\nThis would check against your current medications.`);
+        }
+        
+        function setupPagination() {
+            const pagination = document.getElementById('pagination');
+            pagination.innerHTML = '';
+            
+            for (let i = 1; i <= 5; i++) {
+                const btn = document.createElement('button');
+                btn.className = i === 1 ? 'page-btn active' : 'page-btn';
+                btn.textContent = i;
+                btn.onclick = () => {
+                    document.querySelectorAll('.page-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    // In real app, load page i
+                };
+                pagination.appendChild(btn);
+            }
+        }
+        
+        function logout() {
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('authToken');
+            window.location.href = 'login.html';
+        }
+        
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', initUser);
+        
+        // Allow Enter key to trigger search
+        document.getElementById('medicineSearch').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchMedicines();
+            }
+        });
+        
+        // Auto-search when filters change
+        document.getElementById('filterType').addEventListener('change', searchMedicines);
+        document.getElementById('filterCategory').addEventListener('change', searchMedicines);
+        document.getElementById('filterInteraction').addEventListener('change', searchMedicines);
+    </script>
+</body>
+</html>

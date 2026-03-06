@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediAI Portal | Prescription Upload</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #0ea5e9;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+        
+        body {
+            background: #f8fafc;
+            min-height: 100vh;
+        }
+        
+        .navbar {
+            background: white;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .nav-links a {
+            margin: 0 0.75rem;
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 600;
+            transition: color 0.3s;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary);
+            background: #f0f9ff;
+        }
+        
+        .nav-links a.active {
+            color: var(--primary);
+            background: #f0f9ff;
+        }
+        
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+        
+        .main-content {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .page-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .page-header h1 {
+            font-size: 2.5rem;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-header p {
+            color: #64748b;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .upload-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        @media (max-width: 992px) {
+            .upload-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .upload-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+        }
+        
+        .upload-area {
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 3rem 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1.5rem;
+        }
+        
+        .upload-area:hover {
+            border-color: var(--primary);
+            background: #f8fafc;
+        }
+        
+        .upload-area.dragover {
+            border-color: var(--primary);
+            background: #f0f9ff;
+        }
+        
+        .upload-icon {
+            font-size: 3rem;
+            color: #94a3b8;
+            margin-bottom: 1rem;
+        }
+        
+        .upload-area.dragover .upload-icon {
+            color: var(--primary);
+        }
+        
+        .upload-btn {
+            padding: 0.75rem 2rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+        .upload-btn:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .preview-container {
+            margin-top: 2rem;
+        }
+        
+        .preview-image {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+        
+        .preview-image.active {
+            display: block;
+        }
+        
+        .ocr-results-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+            margin-top: 2rem;
+            display: none;
+        }
+        
+        .ocr-results-card.active {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .ocr-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .ocr-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(90deg, #10b981, #34d399);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        .extracted-text {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        
+        .medication-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .medication-card {
+            background: #f0f9ff;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .medication-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+        
+        .medication-detail {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(37, 99, 235, 0.1);
+        }
+        
+        .detail-label {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+        
+        .detail-value {
+            color: var(--dark);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .action-btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: none;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #f1f5f9;
+            color: var(--dark);
+        }
+        
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+        
+        .loading-indicator {
+            text-align: center;
+            padding: 3rem;
+            display: none;
+        }
+        
+        .loading-indicator.active {
+            display: block;
+        }
+        
+        .ai-processing {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .pulse-dot {
+            width: 12px;
+            height: 12px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+        
+        .pulse-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .pulse-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+        
+        .prescription-history {
+            margin-top: 3rem;
+        }
+        
+        .history-table {
+            width: 100%;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-top: 1rem;
+        }
+        
+        .history-table th {
+            background: #f8fafc;
+            padding: 1rem;
+            text-align: left;
+            color: var(--dark);
+            font-weight: 600;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .history-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            color: #64748b;
+        }
+        
+        .history-table tr:hover {
+            background: #f8fafc;
+        }
+        
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .status-processed { background: #d1fae5; color: #065f46; }
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-error { background: #fee2e2; color: #991b1b; }
+        
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+            
+            .nav-links {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 0.5rem;
+            }
+            
+            .nav-links a {
+                margin: 0;
+                padding: 0.5rem;
+                font-size: 0.9rem;
+            }
+            
+            .main-content {
+                padding: 0 1rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .history-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fas fa-stethoscope"></i>
+            <span>MediAI Portal</span>
+        </div>
+        
+        <div class="nav-links">
+            <a href="index.html"><i class="fas fa-home"></i> Dashboard</a>
+            <a href="search.html"><i class="fas fa-search"></i> Medicine Search</a>
+            <a href="symptom-checker.html"><i class="fas fa-robot"></i> Symptom Check</a>
+            <a href="prescription.html" class="active"><i class="fas fa-file-prescription"></i> Prescription</a>
+            <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+        </div>
+        
+        <div class="user-menu">
+            <div class="user-avatar" id="userInitials">JD</div>
+            <button onclick="logout()" style="background: none; border: none; color: var(--dark); cursor: pointer;">
+                <i class="fas fa-sign-out-alt"></i>
+            </button>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="page-header">
+            <h1>AI Prescription Reader</h1>
+            <p>Upload prescription images and let AI extract medication information</p>
+        </div>
+        
+        <div class="upload-container">
+            <!-- Left Column: Upload Area -->
+            <div class="upload-card">
+                <h2 style="color: var(--dark); margin-bottom: 1rem;">Upload Prescription</h2>
+                <p style="color: #64748b; margin-bottom: 1.5rem;">
+                    Upload a clear image of your prescription. Our AI will extract medication details,
+                    dosage instructions, and doctor information.
+                </p>
+                
+                <div class="upload-area" id="uploadArea" ondragover="handleDragOver(event)" 
+                     ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+                    <div class="upload-icon">
+                        <i class="fas fa-file-prescription"></i>
+                    </div>
+                    <h3 style="color: var(--dark); margin-bottom: 0.5rem;">
+                        Drag & Drop Prescription Image
+                    </h3>
+                    <p style="color: #64748b; margin-bottom: 1rem;">
+                        Supports JPG, PNG, PDF files up to 10MB
+                    </p>
+                    <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+                        <i class="fas fa-upload"></i> Browse Files
+                    </button>
+                    <input type="file" id="fileInput" class="file-input" accept="image/*,.pdf" 
+                           onchange="handleFileSelect(event)">
+                </div>
+                
+                <div class="preview-container">
+                    <img id="imagePreview" class="preview-image" alt="Prescription preview">
+                </div>
+                
+                <div class="action-buttons" style="margin-top: 1.5rem;">
+                    <button class="action-btn btn-primary" onclick="processPrescription()" id="processBtn">
+                        <i class="fas fa-robot"></i> Process with AI
+                    </button>
+                    <button class="action-btn btn-secondary" onclick="clearUpload()">
+                        <i class="fas fa-trash"></i> Clear
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Right Column: Instructions -->
+            <div class="upload-card">
+                <h2 style="color: var(--dark); margin-bottom: 1rem;">How It Works</h2>
+                
+                <div style="margin-top: 1.5rem;">
+                    <div style="display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1.5rem;">
+                        <div style="background: var(--primary); color: white; width: 32px; height: 32px; 
+                             border-radius: 50%; display: flex; align-items: center; justify-content: center; 
+                             font-weight: 600; flex-shrink: 0;">
+                            1
+                        </div>
+                        <div>
+                            <h4 style="color: var(--dark); margin-bottom: 0.25rem;">Upload Prescription</h4>
+                            <p style="color: #64748b; font-size: 0.9rem;">
+                                Take a clear photo of your prescription or upload a scanned copy.
+                                Ensure all text is readable and the image is well-lit.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1.5rem;">
+                        <div style="background: var(--primary); color: white; width: 32px; height: 32px; 
+                             border-radius: 50%; display: flex; align-items: center; justify-content: center; 
+                             font-weight: 600; flex-shrink: 0;">
+                            2
+                        </div>
+                        <div>
+                            <h4 style="color: var(--dark); margin-bottom: 0.25rem;">AI Processing</h4>
+                            <p style="color: #64748b; font-size: 0.9rem;">
+                                Our AI uses advanced OCR (Optical Character Recognition) to extract
+                                text and understand medical terminology from your prescription.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1.5rem;">
+                        <div style="background: var(--primary); color: white; width: 32px; height: 32px; 
+                             border-radius: 50%; display: flex; align-items: center; justify-content: center; 
+                             font-weight: 600; flex-shrink: 0;">
+                            3
+                        </div>
+                        <div>
+                            <h4 style="color: var(--dark); margin-bottom: 0.25rem;">Extracted Information</h4>
+                            <p style="color: #64748b; font-size: 0.9rem;">
+                                The AI identifies medications, dosages, frequencies, and doctor information,
+                                then organizes them in an easy-to-read format.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; align-items: flex-start; gap: 1rem;">
+                        <div style="background: var(--primary); color: white; width: 32px; height: 32px; 
+                             border-radius: 50%; display: flex; align-items: center; justify-content: center; 
+                             font-weight: 600; flex-shrink: 0;">
+                            4
+                        </div>
+                        <div>
+                            <h4 style="color: var(--dark); margin-bottom: 0.25rem;">Save & Manage</h4>
+                            <p style="color: #64748b; font-size: 0.9rem;">
+                                Save extracted medications to your profile, set reminders, and check for
+                                drug interactions with your current medications.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="background: #f0f9ff; padding: 1.5rem; border-radius: 12px; margin-top: 2rem;">
+                    <h4 style="color: var(--primary); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-shield-alt"></i> Privacy & Security
+                    </h4>
+                    <p style="color: #64748b; font-size: 0.9rem;">
+                        Your prescription images are processed securely and are not stored on our servers
+                        after extraction. All data is encrypted during transmission.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Loading Indicator -->
+        <div class="loading-indicator" id="loadingIndicator">
+            <div class="ai-processing">
+                <div class="pulse-dot"></div>
+                <div class="pulse-dot"></div>
+                <div class="pulse-dot"></div>
+            </div>
+            <h3 style="color: var(--dark); margin-bottom: 0.5rem;">AI is Processing Your Prescription</h3>
+            <p style="color: #64748b;">
+                Extracting text, analyzing medical terminology, and identifying medications...
+            </p>
+        </div>
+        
+        <!-- OCR Results -->
+        <div class="ocr-results-card" id="ocrResults">
+            <div class="ocr-header">
+                <div class="ocr-icon">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div>
+                    <h2 style="color: var(--dark);">AI Extraction Results</h2>
+                    <p style="color: #64748b;">
+                        Prescription analyzed and medications identified
+                    </p>
+                </div>
+            </div>
+            
+            <div id="resultsContent">
+                <!-- Results will be loaded here by JavaScript -->
+            </div>
+        </div>
+        
+        <!-- Prescription History -->
+        <div class="prescription-history" id="prescriptionHistory">
+            <h2 style="color: var(--dark); margin-bottom: 1rem;">Previous Prescriptions</h2>
+            <p style="color: #64748b; margin-bottom: 1.5rem;">
+                Your recently processed prescriptions and extracted medications
+            </p>
+            
+            <div class="history-table">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Prescription</th>
+                            <th>Medications</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTableBody">
+                        <!-- History rows will be loaded here by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentFile = null;
+        let prescriptionHistory = [];
+        
+        // Initialize user
+        function initUser() {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Set user initials
+            const userName = user.name || 'User';
+            const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase();
+            document.getElementById('userInitials').textContent = initials;
+            
+            // Load prescription history
+            loadPrescriptionHistory();
+        }
+        
+        // Handle drag over
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            document.getElementById('uploadArea').classList.add('dragover');
+        }
+        
+        // Handle drag leave
+        function handleDragLeave(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            document.getElementById('uploadArea').classList.remove('dragover');
+        }
+        
+        // Handle drop
+        function handleDrop(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            document.getElementById('uploadArea').classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        }
+        
+        // Handle file select via input
+        function handleFileSelect(e) {
+            const files = e.target.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        }
+        
+        // Handle file
+        function handleFile(file) {
+            // Validate file
+            const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'application/pdf'];
+            const maxSize = 10 * 1024 * 1024; // 10MB
+            
+            if (!validTypes.includes(file.type)) {
+                alert('Please upload an image file (JPG, PNG, GIF) or PDF.');
+                return;
+            }
+            
+            if (file.size > maxSize) {
+                alert('File size exceeds 10MB limit.');
+                return;
+            }
+            
+            currentFile = file;
+            
+            // Show preview for images
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('imagePreview');
+                    preview.src = e.target.result;
+                    preview.classList.add('active');
+                };
+                reader.readAsDataURL(file);
+            } else {
+                document.getElementById('imagePreview').classList.remove('active');
+            }
+            
+            // Enable process button
+            document.getElementById('processBtn').disabled = false;
+            
+            // Show file info
+            document.getElementById('uploadArea').innerHTML = `
+                <div class="upload-icon">
+                    <i class="fas fa-file-medical"></i>
+                </div>
+                <h3 style="color: var(--dark); margin-bottom: 0.5rem;">
+                    ${file.name}
+                </h3>
+                <p style="color: #64748b;">
+                    ${(file.size / 1024 / 1024).toFixed(2)} MB • ${file.type}
+                </p>
+                <button class="upload-btn" onclick="document.getElementById('fileInput').click()" style="margin-top: 1rem;">
+                    <i class="fas fa-sync"></i> Change File
+                </button>
+            `;
+        }
+        
+        // Clear upload
+        function clearUpload() {
+            currentFile = null;
+            document.getElementById('imagePreview').classList.remove('active');
+            document.getElementById('fileInput').value = '';
+            document.getElementById('processBtn').disabled = true;
+            document.getElementById('ocrResults').classList.remove('active');
+            
+            // Reset upload area
+            document.getElementById('uploadArea').innerHTML = `
+                <div class="upload-icon">
+                    <i class="fas fa-file-prescription"></i>
+                </div>
+                <h3 style="color: var(--dark); margin-bottom: 0.5rem;">
+                    Drag & Drop Prescription Image
+                </h3>
+                <p style="color: #64748b; margin-bottom: 1rem;">
+                    Supports JPG, PNG, PDF files up to 10MB
+                </p>
+                <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+                    <i class="fas fa-upload"></i> Browse Files
+                </button>
+            `;
+        }
+        
+        // Process prescription
+        function processPrescription() {
+            if (!currentFile) {
+                alert('Please select a file first.');
+                return;
+            }
+            
+            // Show loading
+            document.getElementById('loadingIndicator').classList.add('active');
+            document.getElementById('ocrResults').classList.remove('active');
+            
+            // Disable process button
+            const processBtn = document.getElementById('processBtn');
+            processBtn.disabled = true;
+            processBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            
+            // Simulate AI processing (in real app, this would be an API call)
+            setTimeout(() => {
+                generateOCRResults();
+                document.getElementById('loadingIndicator').classList.remove('active');
+                document.getElementById('ocrResults').classList.add('active');
+                
+                // Re-enable process button
+                processBtn.disabled = false;
+                processBtn.innerHTML = '<i class="fas fa-robot"></i> Process with AI';
+                
+                // Scroll to results
+                document.getElementById('ocrResults').scrollIntoView({ behavior: 'smooth' });
+                
+                // Add to history
+                addToHistory();
+            }, 3000);
+        }
+        
+        // Generate OCR results
+        function generateOCRResults() {
+            const resultsContent = document.getElementById('resultsContent');
+            
+            // Sample extracted text
+            const extractedText = `
+DR. JANE SMITH, MD
+Family Medicine Specialist
+123 Medical Center Drive
+Phone: (555) 123-4567
+License: MED123456
+
+PATIENT: John Doe
+DOB: 15/05/1985
+Date: 15/10/2023
+RX#: RX7890123
+
+1. LISINOPRIL 10MG TABLET
+   Sig: Take one tablet by mouth daily
+   Quantity: 30 tablets
+   Refills: 3
+
+2. METFORMIN 500MG TABLET
+   Sig: Take one tablet twice daily with meals
+   Quantity: 60 tablets
+   Refills: 2
+
+3. ATORVASTATIN 20MG TABLET
+   Sig: Take one tablet at bedtime
+   Quantity: 30 tablets
+   Refills: 3
+
+Doctor's Signature: _________
+DEA Number: BS1234567
+            `;
+            
+            // Sample medications extracted
+            const medications = [
+                {
+                    name: "Lisinopril",
+                    strength: "10mg",
+                    form: "Tablet",
+                    frequency: "Once daily",
+                    quantity: "30 tablets",
+                    refills: "3",
+                    instructions: "Take one tablet by mouth daily"
+                },
+                {
+                    name: "Metformin",
+                    strength: "500mg",
+                    form: "Tablet",
+                    frequency: "Twice daily",
+                    quantity: "60 tablets",
+                    refills: "2",
+                    instructions: "Take one tablet twice daily with meals"
+                },
+                {
+                    name: "Atorvastatin",
+                    strength: "20mg",
+                    form: "Tablet",
+                    frequency: "Once daily",
+                    quantity: "30 tablets",
+                    refills: "3",
+                    instructions: "Take one tablet at bedtime"
+                }
+            ];
+            
+            let html = `
+                <div style="margin-bottom: 1.5rem;">
+                    <h3 style="color: var(--dark); margin-bottom: 1rem;">Extracted Text</h3>
+                    <div class="extracted-text">
+                        ${extractedText}
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 style="color: var(--dark); margin-bottom: 1rem;">Identified Medications</h3>
+                    <p style="color: #64748b; margin-bottom: 1.5rem;">
+                        AI has identified and structured the following medications from your prescription:
+                    </p>
+                    
+                    <div class="medication-grid">
+            `;
+            
+            medications.forEach((med, index) => {
+                html += `
+                    <div class="medication-card">
+                        <div class="medication-name">${med.name}</div>
+                        <div class="medication-detail">
+                            <span class="detail-label">Strength:</span>
+                            <span class="detail-value">${med.strength}</span>
+                        </div>
+                        <div class="medication-detail">
+                            <span class="detail-label">Form:</span>
+                            <span class="detail-value">${med.form}</span>
+                        </div>
+                        <div class="medication-detail">
+                            <span class="detail-label">Frequency:</span>
+                            <span class="detail-value">${med.frequency}</span>
+                        </div>
+                        <div class="medication-detail">
+                            <span class="detail-label">Quantity:</span>
+                            <span class="detail-value">${med.quantity}</span>
+                        </div>
+                        <div style="margin-top: 1rem;">
+                            <button class="action-btn btn-primary" onclick="addMedication(${index})" 
+                                    style="width: 100%; padding: 0.5rem; font-size: 0.9rem;">
+                                <i class="fas fa-plus"></i> Add to My Medicines
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += `
+                    </div>
+                </div>
+                
+                <div class="action-buttons" style="margin-top: 2rem;">
+                    <button class="action-btn btn-primary" onclick="savePrescription()">
+                        <i class="fas fa-save"></i> Save Prescription
+                    </button>
+                    <button class="action-btn btn-secondary" onclick="checkInteractions()">
+                        <i class="fas fa-exclamation-triangle"></i> Check Interactions
+                    </button>
+                    <button class="action-btn btn-secondary" onclick="setReminders()">
+                        <i class="fas fa-bell"></i> Set Reminders
+                    </button>
+                </div>
+                
+                <div style="background: #f0f9ff; padding: 1.5rem; border-radius: 12px; margin-top: 2rem;">
+                    <div style="display: flex; align-items: flex-start; gap: 1rem;">
+                        <i class="fas fa-robot" style="color: var(--primary); font-size: 1.5rem;"></i>
+                        <div>
+                            <h4 style="color: var(--primary); margin-bottom: 0.5rem;">AI Analysis Note</h4>
+                            <p style="color: #64748b; font-size: 0.9rem;">
+                                The AI has achieved 94% accuracy in text extraction based on image quality. 
+                                Medication names and dosages have been verified against our drug database. 
+                                Please verify all information with your original prescription.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            resultsContent.innerHTML = html;
+        }
+        
+        // Add medication to user's list
+        function addMedication(index) {
+            const medications = [
+                { name: "Lisinopril", strength: "10mg", frequency: "Once daily" },
+                { name: "Metformin", strength: "500mg", frequency: "Twice daily" },
+                { name: "Atorvastatin", strength: "20mg", frequency: "Once daily" }
+            ];
+            
+            const med = medications[index];
+            alert(`Added ${med.name} ${med.strength} (${med.frequency}) to your medications!`);
+            
+            // In a real app, this would save to backend
+            saveToBackend(med);
+        }
+        
+        // Save prescription
+        function savePrescription() {
+            alert('Prescription saved to your medical history!');
+        }
+        
+        // Check interactions
+        function checkInteractions() {
+            alert('Checking for drug interactions... This would analyze against your current medications.');
+        }
+        
+        // Set reminders
+        function setReminders() {
+            alert('Setting up medication reminders... This would create reminder schedules.');
+        }
+        
+        // Save to backend (simulated)
+        function saveToBackend(medication) {
+            // In a real app, this would be an API call
+            console.log('Saving medication:', medication);
+        }
+        
+        // Load prescription history
+        function loadPrescriptionHistory() {
+            // Sample history data
+            prescriptionHistory = [
+                {
+                    id: 1,
+                    date: '2023-10-15',
+                    filename: 'prescription_oct_2023.jpg',
+                    medications: ['Lisinopril', 'Metformin', 'Atorvastatin'],
+                    status: 'processed'
+                },
+                {
+                    id: 2,
+                    date: '2023-09-22',
+                    filename: 'prescription_sep_2023.pdf',
+                    medications: ['Amoxicillin', 'Ibuprofen'],
+                    status: 'processed'
+                },
+                {
+                    id: 3,
+                    date: '2023-08-10',
+                    filename: 'prescription_aug_2023.png',
+                    medications: ['Vitamin D', 'Cetirizine'],
+                    status: 'processed'
+                }
+            ];
+            
+            const tableBody = document.getElementById('historyTableBody');
+            tableBody.innerHTML = '';
+            
+            prescriptionHistory.forEach(prescription => {
+                const statusClass = `status-${prescription.status}`;
+                const statusText = prescription.status.charAt(0).toUpperCase() + prescription.status.slice(1);
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${prescription.date}</td>
+                    <td>${prescription.filename}</td>
+                    <td>${prescription.medications.join(', ')}</td>
+                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                    <td>
+                        <button onclick="viewPrescription(${prescription.id})" 
+                                style="background: none; border: none; color: var(--primary); cursor: pointer; margin-right: 0.5rem;">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button onclick="deletePrescription(${prescription.id})" 
+                                style="background: none; border: none; color: var(--danger); cursor: pointer;">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+        
+        // Add to history
+        function addToHistory() {
+            const newPrescription = {
+                id: prescriptionHistory.length + 1,
+                date: new Date().toISOString().split('T')[0],
+                filename: currentFile.name,
+                medications: ['Lisinopril', 'Metformin', 'Atorvastatin'],
+                status: 'processed'
+            };
+            
+            prescriptionHistory.unshift(newPrescription);
+            loadPrescriptionHistory();
+        }
+        
+        // View prescription
+        function viewPrescription(id) {
+            const prescription = prescriptionHistory.find(p => p.id === id);
+            if (prescription) {
+                alert(`Viewing prescription: ${prescription.filename}\nMedications: ${prescription.medications.join(', ')}`);
+            }
+        }
+        
+        // Delete prescription
+        function deletePrescription(id) {
+            if (confirm('Are you sure you want to delete this prescription?')) {
+                prescriptionHistory = prescriptionHistory.filter(p => p.id !== id);
+                loadPrescriptionHistory();
+            }
+        }
+        
+        function logout() {
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('authToken');
+            window.location.href = 'login.html';
+        }
+        
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', initUser);
+    </script>
+</body>
+</html>

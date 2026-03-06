@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MediAI Portal | Login</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <style>
+    :root{
+      --primary:#2563eb;
+      --secondary:#0ea5e9;
+      --dark:#1e293b;
+      --muted:#64748b;
+      --border:#e2e8f0;
+      --danger:#ef4444;
+      --success:#10b981;
+      --bg1:#f0f9ff;
+      --bg2:#e0f2fe;
+    }
+
+    *{ margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',system-ui,sans-serif; }
+
+    body{
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:1rem;
+      background:linear-gradient(135deg,var(--bg1) 0%,var(--bg2) 100%);
+    }
+
+    .login-container{ width:100%; max-width:420px; }
+    .login-card{
+      background:#fff;
+      padding:2.5rem;
+      border-radius:20px;
+      border:1px solid rgba(0,0,0,.05);
+      box-shadow:0 20px 50px rgba(0,0,0,.1);
+    }
+
+    .logo{ text-align:center; margin-bottom:2rem; }
+    .logo i{
+      font-size:2.5rem;
+      background:linear-gradient(90deg,var(--primary),var(--secondary));
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+    }
+    .logo h1{ font-size:1.8rem; font-weight:800; color:var(--dark); margin-top:.5rem; }
+    .logo p{ color:var(--muted); margin-top:.5rem; }
+
+    .alert{
+      display:none;
+      padding:1rem;
+      border-radius:10px;
+      margin-bottom:1.25rem;
+      font-weight:600;
+      font-size:.95rem;
+    }
+    .alert-danger{ background:#fee2e2; border:1px solid #fecaca; color:#dc2626; }
+    .alert-success{ background:#d1fae5; border:1px solid #a7f3d0; color:#059669; }
+
+    .form-group{ margin-bottom:1.25rem; }
+    .input-icon{ position:relative; }
+    .input-icon i{
+      position:absolute;
+      left:1rem;
+      top:50%;
+      transform:translateY(-50%);
+      color:#94a3b8;
+      pointer-events:none;
+    }
+
+    .form-control{
+      width:100%;
+      padding:1rem 1rem 1rem 3rem;
+      border:2px solid var(--border);
+      border-radius:10px;
+      font-size:1rem;
+      transition:.2s;
+      outline:none;
+    }
+    .form-control:focus{
+      border-color:var(--primary);
+      box-shadow:0 0 0 3px rgba(37,99,235,.12);
+    }
+
+    .row-between{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:1rem;
+      margin-bottom:1.25rem;
+    }
+
+    .remember{
+      display:flex;
+      align-items:center;
+      gap:.5rem;
+      color:var(--muted);
+      user-select:none;
+    }
+
+    .link{
+      color:var(--primary);
+      text-decoration:none;
+      font-weight:700;
+    }
+    .link:hover{ text-decoration:underline; }
+
+    .btn{
+      width:100%;
+      padding:1rem;
+      border:none;
+      border-radius:10px;
+      font-size:1rem;
+      font-weight:700;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:.5rem;
+      transition:.2s;
+    }
+    .btn-primary{
+      color:#fff;
+      background:linear-gradient(90deg,var(--primary),var(--secondary));
+    }
+    .btn-primary:hover{
+      transform:translateY(-2px);
+      box-shadow:0 6px 20px rgba(37,99,235,.3);
+    }
+    .btn:disabled{
+      opacity:.75;
+      cursor:not-allowed;
+      transform:none;
+      box-shadow:none;
+    }
+
+    .footer-note{
+      margin-top:2rem;
+      padding-top:1.5rem;
+      border-top:1px solid var(--border);
+      text-align:center;
+      color:var(--muted);
+      font-size:.9rem;
+      line-height:1.45;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="login-container">
+    <div class="login-card">
+
+      <div class="logo">
+        <i class="fas fa-stethoscope"></i>
+        <h1>MediAI Portal</h1>
+        <p>AI-Powered Medical Assistant</p>
+      </div>
+
+      <div id="alert" class="alert"></div>
+
+      <form id="loginForm" autocomplete="on">
+        <div class="form-group input-icon">
+          <i class="fas fa-envelope"></i>
+          <input type="email" id="email" class="form-control" placeholder="Email address" required />
+        </div>
+
+        <div class="form-group input-icon">
+          <i class="fas fa-lock"></i>
+          <input type="password" id="password" class="form-control" placeholder="Password" required />
+        </div>
+
+        <div class="row-between">
+          <label class="remember">
+            <input type="checkbox" id="remember" />
+            <span>Remember me</span>
+          </label>
+
+          <a class="link" href="#">Forgot password?</a>
+        </div>
+
+        <button id="submitBtn" type="submit" class="btn btn-primary">
+          <i class="fas fa-sign-in-alt"></i>
+          <span>Login to Dashboard</span>
+        </button>
+      </form>
+
+      <p style="text-align:center; margin-top:1.5rem; color:var(--dark);">
+        Don't have an account? <a class="link" href="register.html">Register here</a>
+      </p>
+
+      <div class="footer-note">
+        <strong>⚠️ Important:</strong> This portal provides AI-assisted medical information only.
+        Always consult healthcare professionals for medical advice.
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // If you later connect real backend, update this:
+    const API_BASE = "http://localhost:3001/api";
+
+    const alertBox = document.getElementById("alert");
+    const loginForm = document.getElementById("loginForm");
+    const submitBtn = document.getElementById("submitBtn");
+
+    function showAlert(message, type = "danger") {
+      alertBox.className = `alert alert-${type}`;
+      alertBox.textContent = message;
+      alertBox.style.display = "block";
+    }
+
+    function hideAlert() {
+      alertBox.style.display = "none";
+      alertBox.className = "alert";
+      alertBox.textContent = "";
+    }
+
+    function setLoading(isLoading) {
+      if (isLoading) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i><span>Authenticating...</span>`;
+      } else {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `<i class="fas fa-sign-in-alt"></i><span>Login to Dashboard</span>`;
+      }
+    }
+
+    function redirectToDashboard() {
+      // same folder redirect (frontend/index.html if this file is in frontend)
+      window.location.href = "./index.html";
+    }
+
+    // Avoid redirect loop: only redirect if token exists
+    window.addEventListener("DOMContentLoaded", () => {
+      try {
+        const token = localStorage.getItem("authToken");
+        if (token) redirectToDashboard();
+      } catch (e) {
+        // ignore storage errors
+      }
+    });
+
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      hideAlert();
+
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      if (!email || !password) {
+        showAlert("Please fill in all fields", "danger");
+        return;
+      }
+
+      setLoading(true);
+
+      try {
+        /**
+         * DEMO LOGIN MODE (your current behavior)
+         * Replace this part with real fetch() call when backend ready.
+         */
+
+        await new Promise((r) => setTimeout(r, 900));
+
+        const user = {
+          id: 1,
+          name: "Demo User",
+          email,
+          token: "demo_jwt_token_" + Date.now()
+        };
+
+        localStorage.setItem("currentUser", JSON.stringify(user));
+        localStorage.setItem("authToken", user.token);
+
+        // Optional: remember email
+        if (document.getElementById("remember").checked) {
+          localStorage.setItem("rememberEmail", email);
+        } else {
+          localStorage.removeItem("rememberEmail");
+        }
+
+        showAlert("Login successful! Redirecting...", "success");
+
+        setTimeout(() => {
+          redirectToDashboard();
+        }, 900);
+
+      } catch (err) {
+        showAlert("Login failed. Please check your credentials.", "danger");
+        setLoading(false);
+      }
+    });
+  </script>
+</body>
+</html>

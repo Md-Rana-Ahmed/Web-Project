@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediAI Portal | AI Symptom Checker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #0ea5e9;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+        
+        body {
+            background: #f8fafc;
+            min-height: 100vh;
+        }
+        
+        .navbar {
+            background: white;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .nav-links a {
+            margin: 0 0.75rem;
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 600;
+            transition: color 0.3s;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary);
+            background: #f0f9ff;
+        }
+        
+        .nav-links a.active {
+            color: var(--primary);
+            background: #f0f9ff;
+        }
+        
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+        
+        .main-content {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .page-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .page-header h1 {
+            font-size: 2.5rem;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-header p {
+            color: #64748b;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .warning-banner {
+            background: linear-gradient(90deg, #fef3c7, #fde68a);
+            border: 1px solid #fbbf24;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        
+        .warning-icon {
+            color: #d97706;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+        
+        .warning-content h3 {
+            color: #92400e;
+            margin-bottom: 0.5rem;
+        }
+        
+        .warning-content p {
+            color: #92400e;
+            font-size: 0.95rem;
+        }
+        
+        .symptom-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        @media (max-width: 992px) {
+            .symptom-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .symptom-input-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+        }
+        
+        .symptom-categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        
+        .category-btn {
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        
+        .category-btn:hover {
+            border-color: var(--primary);
+            background: #f0f9ff;
+        }
+        
+        .category-btn.active {
+            border-color: var(--primary);
+            background: #f0f9ff;
+            color: var(--primary);
+        }
+        
+        .category-btn i {
+            display: block;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+        
+        .category-btn.active i {
+            color: var(--primary);
+        }
+        
+        .symptom-list {
+            margin: 1.5rem 0;
+        }
+        
+        .symptom-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+        .symptom-tag {
+            padding: 0.5rem 1rem;
+            background: #f1f5f9;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: var(--dark);
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .symptom-tag:hover {
+            background: #e2e8f0;
+        }
+        
+        .symptom-tag.selected {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .symptom-tag.selected i {
+            color: white;
+        }
+        
+        .symptom-textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            resize: vertical;
+            margin-top: 1rem;
+        }
+        
+        .symptom-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        
+        .analysis-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .analysis-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
+        }
+        
+        .symptom-sidebar {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+            height: fit-content;
+        }
+        
+        .selected-symptoms {
+            margin-top: 1.5rem;
+        }
+        
+        .selected-list {
+            margin-top: 1rem;
+        }
+        
+        .selected-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            background: #f8fafc;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+        }
+        
+        .selected-item button {
+            background: none;
+            border: none;
+            color: var(--danger);
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .ai-results-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+            margin-top: 2rem;
+            display: none;
+        }
+        
+        .ai-results-card.active {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .ai-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .ai-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .condition-card {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .condition-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+        
+        .confidence-meter {
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+        
+        .confidence-fill {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 4px;
+            transition: width 1s ease;
+        }
+        
+        .severity-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+        
+        .severity-low { background: #d1fae5; color: #065f46; }
+        .severity-medium { background: #fef3c7; color: #92400e; }
+        .severity-high { background: #fee2e2; color: #991b1b; }
+        
+        .recommendations {
+            background: #f0f9ff;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .recommendations h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .recommendation-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(37, 99, 235, 0.1);
+        }
+        
+        .recommendation-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .recommendation-icon {
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+        
+        .loading-indicator {
+            text-align: center;
+            padding: 3rem;
+            display: none;
+        }
+        
+        .loading-indicator.active {
+            display: block;
+        }
+        
+        .ai-thinking {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .pulse-dot {
+            width: 12px;
+            height: 12px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+        
+        .pulse-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .pulse-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+        
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+            
+            .nav-links {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 0.5rem;
+            }
+            
+            .nav-links a {
+                margin: 0;
+                padding: 0.5rem;
+                font-size: 0.9rem;
+            }
+            
+            .main-content {
+                padding: 0 1rem;
+            }
+            
+            .symptom-categories {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fas fa-stethoscope"></i>
+            <span>MediAI Portal</span>
+        </div>
+        
+        <div class="nav-links">
+            <a href="index.html"><i class="fas fa-home"></i> Dashboard</a>
+            <a href="search.html"><i class="fas fa-search"></i> Medicine Search</a>
+            <a href="symptom-checker.html" class="active"><i class="fas fa-robot"></i> Symptom Check</a>
+            <a href="prescription.html"><i class="fas fa-file-prescription"></i> Prescription</a>
+            <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+        </div>
+        
+        <div class="user-menu">
+            <div class="user-avatar" id="userInitials">JD</div>
+            <button onclick="logout()" style="background: none; border: none; color: var(--dark); cursor: pointer;">
+                <i class="fas fa-sign-out-alt"></i>
+            </button>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="page-header">
+            <h1>AI Symptom Checker</h1>
+            <p>Describe your symptoms and get AI-powered analysis of possible conditions</p>
+        </div>
+        
+        <div class="warning-banner">
+            <div class="warning-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="warning-content">
+                <h3>Important Medical Disclaimer</h3>
+                <p>This AI symptom checker provides information for educational purposes only. 
+                It is not a substitute for professional medical advice, diagnosis, or treatment. 
+                Always seek the advice of your physician or other qualified health provider with 
+                any questions you may have regarding a medical condition.</p>
+            </div>
+        </div>
+        
+        <div class="symptom-container">
+            <!-- Left Column: Symptom Input -->
+            <div class="symptom-input-card">
+                <h2 style="color: var(--dark); margin-bottom: 1.5rem;">Describe Your Symptoms</h2>
+                
+                <div class="symptom-list">
+                    <h3 style="color: var(--dark); margin-bottom: 1rem;">Common Symptom Categories</h3>
+                    <div class="symptom-categories" id="symptomCategories">
+                        <!-- Categories will be loaded by JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="symptom-list">
+                    <h3 style="color: var(--dark); margin-bottom: 1rem;">Selected Symptoms</h3>
+                    <div class="symptom-tags" id="selectedSymptoms">
+                        <!-- Selected symptoms will appear here -->
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 style="color: var(--dark); margin-bottom: 1rem;">Additional Details</h3>
+                    <textarea class="symptom-textarea" id="symptomDetails" 
+                              placeholder="Provide additional details about your symptoms (duration, severity, other relevant information)..."></textarea>
+                </div>
+                
+                <button class="analysis-btn" onclick="analyzeSymptoms()" id="analyzeBtn">
+                    <i class="fas fa-brain"></i> Analyze Symptoms with AI
+                </button>
+            </div>
+            
+            <!-- Right Column: Selected Symptoms -->
+            <div class="symptom-sidebar">
+                <h2 style="color: var(--dark); margin-bottom: 1rem;">Your Symptoms</h2>
+                <p style="color: #64748b; font-size: 0.95rem;">
+                    Select symptoms from the categories or describe them below
+                </p>
+                
+                <div class="selected-symptoms">
+                    <h3 style="color: var(--dark); font-size: 1rem; margin-bottom: 1rem;">
+                        Currently Selected (<span id="symptomCount">0</span>)
+                    </h3>
+                    <div class="selected-list" id="symptomList">
+                        <p style="color: #94a3b8; text-align: center; padding: 1rem;">
+                            No symptoms selected yet
+                        </p>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 2rem;">
+                    <h3 style="color: var(--dark); font-size: 1rem; margin-bottom: 1rem;">
+                        Symptom Duration
+                    </h3>
+                    <select id="symptomDuration" class="symptom-tag" style="width: 100%; padding: 0.75rem; border: 2px solid #e2e8f0;">
+                        <option value="">Select duration</option>
+                        <option value="hours">Less than 24 hours</option>
+                        <option value="days">1-3 days</option>
+                        <option value="week">4-7 days</option>
+                        <option value="weeks">1-2 weeks</option>
+                        <option value="month">More than a month</option>
+                    </select>
+                </div>
+                
+                <div style="margin-top: 1.5rem;">
+                    <h3 style="color: var(--dark); font-size: 1rem; margin-bottom: 1rem;">
+                        Severity Level
+                    </h3>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button class="symptom-tag" onclick="setSeverity('mild')" id="severityMild">
+                            Mild
+                        </button>
+                        <button class="symptom-tag" onclick="setSeverity('moderate')" id="severityModerate">
+                            Moderate
+                        </button>
+                        <button class="symptom-tag" onclick="setSeverity('severe')" id="severitySevere">
+                            Severe
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Loading Indicator -->
+        <div class="loading-indicator" id="loadingIndicator">
+            <div class="ai-thinking">
+                <div class="pulse-dot"></div>
+                <div class="pulse-dot"></div>
+                <div class="pulse-dot"></div>
+            </div>
+            <h3 style="color: var(--dark); margin-bottom: 0.5rem;">AI is Analyzing Your Symptoms</h3>
+            <p style="color: #64748b;">Checking against medical databases and analyzing patterns...</p>
+        </div>
+        
+        <!-- AI Results -->
+        <div class="ai-results-card" id="aiResults">
+            <div class="ai-header">
+                <div class="ai-icon">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div>
+                    <h2 style="color: var(--dark);">AI Analysis Results</h2>
+                    <p style="color: #64748b;">
+                        Based on your symptoms and our medical database
+                    </p>
+                </div>
+            </div>
+            
+            <div id="resultsContent">
+                <!-- Results will be loaded here by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Symptom data
+        const symptomCategories = [
+            {
+                id: 'general',
+                name: 'General',
+                icon: 'fas fa-user',
+                symptoms: ['Fever', 'Fatigue', 'Weight loss', 'Weight gain', 'Night sweats']
+            },
+            {
+                id: 'head',
+                name: 'Head & Neck',
+                icon: 'fas fa-head-side-virus',
+                symptoms: ['Headache', 'Dizziness', 'Sore throat', 'Runny nose', 'Ear pain']
+            },
+            {
+                id: 'chest',
+                name: 'Chest & Breathing',
+                icon: 'fas fa-lungs',
+                symptoms: ['Cough', 'Chest pain', 'Shortness of breath', 'Wheezing', 'Palpitations']
+            },
+            {
+                id: 'abdominal',
+                name: 'Abdominal',
+                icon: 'fas fa-stomach',
+                symptoms: ['Abdominal pain', 'Nausea', 'Vomiting', 'Diarrhea', 'Constipation']
+            },
+            {
+                id: 'musculoskeletal',
+                name: 'Musculoskeletal',
+                icon: 'fas fa-bone',
+                symptoms: ['Joint pain', 'Back pain', 'Muscle aches', 'Swelling', 'Stiffness']
+            },
+            {
+                id: 'skin',
+                name: 'Skin',
+                icon: 'fas fa-allergies',
+                symptoms: ['Rash', 'Itching', 'Hives', 'Swelling', 'Redness']
+            }
+        ];
+        
+        let selectedSymptoms = [];
+        let currentSeverity = 'moderate';
+        
+        // Initialize user
+        function initUser() {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Set user initials
+            const userName = user.name || 'User';
+            const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase();
+            document.getElementById('userInitials').textContent = initials;
+            
+            // Load symptom categories
+            loadSymptomCategories();
+            updateSymptomDisplay();
+        }
+        
+        // Load symptom categories
+        function loadSymptomCategories() {
+            const container = document.getElementById('symptomCategories');
+            container.innerHTML = '';
+            
+            symptomCategories.forEach(category => {
+                const button = document.createElement('button');
+                button.className = 'category-btn';
+                button.onclick = () => toggleCategory(category.id);
+                button.innerHTML = `
+                    <i class="${category.icon}"></i>
+                    <span>${category.name}</span>
+                `;
+                container.appendChild(button);
+                
+                // Create symptom tags for this category
+                const tagsContainer = document.createElement('div');
+                tagsContainer.className = 'symptom-tags';
+                tagsContainer.id = `tags-${category.id}`;
+                tagsContainer.style.display = 'none';
+                
+                category.symptoms.forEach(symptom => {
+                    const tag = document.createElement('div');
+                    tag.className = 'symptom-tag';
+                    tag.textContent = symptom;
+                    tag.onclick = () => toggleSymptom(symptom);
+                    tagsContainer.appendChild(tag);
+                });
+                
+                // Insert after the button
+                button.parentNode.insertBefore(tagsContainer, button.nextSibling);
+            });
+        }
+        
+        // Toggle category visibility
+        function toggleCategory(categoryId) {
+            const button = document.querySelector(`[onclick="toggleCategory('${categoryId}')"]`);
+            const tagsContainer = document.getElementById(`tags-${categoryId}`);
+            
+            // Toggle active class on button
+            button.classList.toggle('active');
+            
+            // Toggle visibility of symptom tags
+            if (tagsContainer.style.display === 'none') {
+                tagsContainer.style.display = 'flex';
+            } else {
+                tagsContainer.style.display = 'none';
+            }
+        }
+        
+        // Toggle symptom selection
+        function toggleSymptom(symptom) {
+            const tag = event.target;
+            const index = selectedSymptoms.indexOf(symptom);
+            
+            if (index === -1) {
+                // Add symptom
+                selectedSymptoms.push(symptom);
+                tag.classList.add('selected');
+                tag.innerHTML = `<i class="fas fa-check"></i> ${symptom}`;
+            } else {
+                // Remove symptom
+                selectedSymptoms.splice(index, 1);
+                tag.classList.remove('selected');
+                tag.innerHTML = symptom;
+            }
+            
+            updateSymptomDisplay();
+        }
+        
+        // Set severity level
+        function setSeverity(severity) {
+            currentSeverity = severity;
+            
+            // Update button states
+            document.getElementById('severityMild').classList.remove('selected');
+            document.getElementById('severityModerate').classList.remove('selected');
+            document.getElementById('severitySevere').classList.remove('selected');
+            
+            document.getElementById(`severity${severity.charAt(0).toUpperCase() + severity.slice(1)}`).classList.add('selected');
+        }
+        
+        // Update symptom display
+        function updateSymptomDisplay() {
+            const countElement = document.getElementById('symptomCount');
+            const listElement = document.getElementById('symptomList');
+            const selectedContainer = document.getElementById('selectedSymptoms');
+            
+            // Update count
+            countElement.textContent = selectedSymptoms.length;
+            
+            // Update selected symptoms tags
+            selectedContainer.innerHTML = '';
+            selectedSymptoms.forEach(symptom => {
+                const tag = document.createElement('div');
+                tag.className = 'symptom-tag selected';
+                tag.innerHTML = `<i class="fas fa-check"></i> ${symptom}`;
+                tag.onclick = () => toggleSymptom(symptom);
+                selectedContainer.appendChild(tag);
+            });
+            
+            // Update symptom list
+            listElement.innerHTML = '';
+            
+            if (selectedSymptoms.length === 0) {
+                listElement.innerHTML = '<p style="color: #94a3b8; text-align: center; padding: 1rem;">No symptoms selected yet</p>';
+            } else {
+                selectedSymptoms.forEach(symptom => {
+                    const item = document.createElement('div');
+                    item.className = 'selected-item';
+                    item.innerHTML = `
+                        <span>${symptom}</span>
+                        <button onclick="removeSymptom('${symptom}')">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    `;
+                    listElement.appendChild(item);
+                });
+            }
+        }
+        
+        // Remove symptom
+        function removeSymptom(symptom) {
+            const index = selectedSymptoms.indexOf(symptom);
+            if (index !== -1) {
+                selectedSymptoms.splice(index, 1);
+                
+                // Also remove from tag selection
+                const tags = document.querySelectorAll('.symptom-tag');
+                tags.forEach(tag => {
+                    if (tag.textContent.includes(symptom)) {
+                        tag.classList.remove('selected');
+                        tag.innerHTML = symptom;
+                    }
+                });
+                
+                updateSymptomDisplay();
+            }
+        }
+        
+        // Analyze symptoms
+        function analyzeSymptoms() {
+            const details = document.getElementById('symptomDetails').value;
+            const duration = document.getElementById('symptomDuration').value;
+            
+            if (selectedSymptoms.length === 0 && !details.trim()) {
+                alert('Please select symptoms or describe them in the text area.');
+                return;
+            }
+            
+            // Show loading
+            document.getElementById('loadingIndicator').classList.add('active');
+            document.getElementById('aiResults').classList.remove('active');
+            
+            // Disable analyze button
+            const analyzeBtn = document.getElementById('analyzeBtn');
+            analyzeBtn.disabled = true;
+            analyzeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
+            
+            // Simulate AI analysis (in real app, this would be an API call)
+            setTimeout(() => {
+                generateAIResults();
+                document.getElementById('loadingIndicator').classList.remove('active');
+                document.getElementById('aiResults').classList.add('active');
+                
+                // Re-enable analyze button
+                analyzeBtn.disabled = false;
+                analyzeBtn.innerHTML = '<i class="fas fa-brain"></i> Analyze Symptoms with AI';
+                
+                // Scroll to results
+                document.getElementById('aiResults').scrollIntoView({ behavior: 'smooth' });
+            }, 3000);
+        }
+        
+        // Generate AI results
+        function generateAIResults() {
+            const resultsContent = document.getElementById('resultsContent');
+            const duration = document.getElementById('symptomDuration').value;
+            const details = document.getElementById('symptomDetails').value;
+            
+            // Sample AI results based on symptoms
+            const possibleConditions = [
+                {
+                    name: "Upper Respiratory Infection",
+                    confidence: Math.floor(Math.random() * 30) + 65,
+                    description: "Common viral infection affecting the nose, throat, and airways.",
+                    severity: "low",
+                    recommendations: [
+                        "Rest and stay hydrated",
+                        "Use over-the-counter fever reducers if needed",
+                        "Use saline nasal drops for congestion",
+                        "Monitor temperature regularly"
+                    ]
+                },
+                {
+                    name: "Viral Gastroenteritis",
+                    confidence: Math.floor(Math.random() * 25) + 40,
+                    description: "Stomach flu causing inflammation of the stomach and intestines.",
+                    severity: "medium",
+                    recommendations: [
+                        "Drink plenty of clear fluids",
+                        "Follow BRAT diet (bananas, rice, applesauce, toast)",
+                        "Avoid dairy and fatty foods",
+                        "Rest and monitor for dehydration signs"
+                    ]
+                },
+                {
+                    name: "Seasonal Allergies",
+                    confidence: Math.floor(Math.random() * 20) + 30,
+                    description: "Allergic reaction to pollen or other environmental allergens.",
+                    severity: "low",
+                    recommendations: [
+                        "Use antihistamines as directed",
+                        "Keep windows closed during high pollen days",
+                        "Use air purifier at home",
+                        "Shower after being outdoors"
+                    ]
+                }
+            ];
+            
+            // Filter based on selected symptoms
+            let filteredConditions = possibleConditions;
+            
+            if (selectedSymptoms.includes('Fever') && selectedSymptoms.includes('Cough')) {
+                filteredConditions = [possibleConditions[0], possibleConditions[2]];
+            } else if (selectedSymptoms.includes('Nausea') || selectedSymptoms.includes('Vomiting')) {
+                filteredConditions = [possibleConditions[1], possibleConditions[0]];
+            }
+            
+            let html = `
+                <div style="margin-bottom: 2rem;">
+                    <h3 style="color: var(--dark); margin-bottom: 1rem;">Analysis Summary</h3>
+                    <p style="color: #64748b;">
+                        Based on ${selectedSymptoms.length} symptom${selectedSymptoms.length !== 1 ? 's' : ''} 
+                        ${duration ? `lasting ${duration}` : ''}${details ? ' and additional details provided' : ''}, 
+                        our AI has analyzed possible conditions:
+                    </p>
+                </div>
+                
+                <div class="results-grid">
+            `;
+            
+            filteredConditions.forEach(condition => {
+                const severityClass = `severity-${condition.severity}`;
+                const severityText = condition.severity === 'low' ? 'Low Severity' : 
+                                   condition.severity === 'medium' ? 'Moderate Severity' : 'High Severity';
+                
+                html += `
+                    <div class="condition-card">
+                        <div class="condition-name">${condition.name}</div>
+                        <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 1rem;">
+                            ${condition.description}
+                        </p>
+                        
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                            <span style="color: var(--dark); font-size: 0.9rem;">AI Confidence</span>
+                            <span style="color: var(--primary); font-weight: 600;">${condition.confidence}%</span>
+                        </div>
+                        
+                        <div class="confidence-meter">
+                            <div class="confidence-fill" style="width: ${condition.confidence}%"></div>
+                        </div>
+                        
+                        <div class="${severityClass} severity-badge">
+                            ${severityText}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += `
+                </div>
+                
+                <div class="recommendations">
+                    <h3><i class="fas fa-heartbeat"></i> Recommended Actions</h3>
+                    
+                    <div class="recommendation-item">
+                        <div class="recommendation-icon">
+                            <i class="fas fa-user-md"></i>
+                        </div>
+                        <div>
+                            <strong style="color: var(--dark);">Consult a Healthcare Professional</strong>
+                            <p style="color: #64748b; margin-top: 0.25rem;">
+                                Schedule an appointment with your doctor for proper diagnosis and treatment.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="recommendation-item">
+                        <div class="recommendation-icon">
+                            <i class="fas fa-prescription-bottle"></i>
+                        </div>
+                        <div>
+                            <strong style="color: var(--dark);">Monitor Symptoms</strong>
+                            <p style="color: #64748b; margin-top: 0.25rem;">
+                                Keep track of symptom changes, temperature, and any new symptoms that develop.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="recommendation-item">
+                        <div class="recommendation-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div>
+                            <strong style="color: var(--dark);">Seek Immediate Care If</strong>
+                            <p style="color: #64748b; margin-top: 0.25rem;">
+                                Difficulty breathing, severe pain, high fever (over 103°F), or confusion develops.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="background: #fef3c7; padding: 1.5rem; border-radius: 12px; margin-top: 2rem;">
+                    <div style="display: flex; align-items: flex-start; gap: 1rem;">
+                        <i class="fas fa-robot" style="color: #d97706; font-size: 1.5rem;"></i>
+                        <div>
+                            <h4 style="color: #92400e; margin-bottom: 0.5rem;">AI Analysis Note</h4>
+                            <p style="color: #92400e; font-size: 0.9rem;">
+                                This analysis is based on patterns in medical literature and symptom databases. 
+                                It becomes more accurate with more detailed symptom information. The confidence 
+                                score reflects how closely your symptoms match typical patterns for each condition.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            resultsContent.innerHTML = html;
+        }
+        
+        function logout() {
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('authToken');
+            window.location.href = 'login.html';
+        }
+        
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', initUser);
+        window.addEventListener('DOMContentLoaded', () => setSeverity('moderate'));
+    </script>
+</body>
+</html>
